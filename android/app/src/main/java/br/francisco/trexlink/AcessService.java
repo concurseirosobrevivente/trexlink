@@ -94,13 +94,56 @@ public class AcessService extends AccessibilityService {
         return "Foto (toque na tela)";
     }
 
-    /** Procura e clica num botao pelo texto dentro dos pacotes indicados. */
-    public boolean clicarTexto(String[] pacotes, String[] textos) {
+    /**
+     * Despertador da Samsung: o botao (X para dispensar, zZ para soneca) so funciona deslizando.
+     * Acha o botao pelo texto e arrasta do centro dele ate perto da borda mais distante.
+     * @return "ok" se deslizou, null se nao achou o botao
+     */
+    public String deslizarAlarme(String[] pacotes, String[] textos) {
         for (AccessibilityNodeInfo raiz : raizes(pacotes)) {
             AccessibilityNodeInfo n = procurar(raiz, textos);
-            if (n != null && clicar(n)) return true;
+            if (n == null) continue;
+            Rect r = new Rect();
+            n.getBoundsInScreen(r);
+            if (r.width() <= 0 || r.height() <= 0) continue;
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            float x = r.exactCenterX();
+            float y = r.exactCenterY();
+            float destinoX = (x < dm.widthPixels / 2f) ? dm.widthPixels * 0.95f : dm.widthPixels * 0.05f;
+            float destinoY = (y > dm.heightPixels / 2f) ? y - dm.heightPixels * 0.15f : y + dm.heightPixels * 0.15f;
+            deslizar(x, y, destinoX, destinoY, 450);
+            return "ok";
         }
-        return false;
+        return null;
+    }
+
+    /** Textos visiveis na tela do app indicado (para diagnostico). */
+    public String textosNaTela(String[] pacotes) {
+        List<String> t = new ArrayList<>();
+        for (AccessibilityNodeInfo raiz : raizes(pacotes)) coletar(raiz, t);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < t.size() && i < 8; i++) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(t.get(i));
+        }
+        return sb.toString();
+    }
+
+    private static void coletar(AccessibilityNodeInfo n, List<String> t) {
+        if (n == null || t.size() >= 8) return;
+        CharSequence s = n.getText() != null ? n.getText() : n.getContentDescription();
+        if (s != null && s.length() > 0 && s.length() < 30) t.add(s.toString());
+        for (int i = 0; i < n.getChildCount(); i++) coletar(n.getChild(i), t);
+    }
+
+    private void deslizar(float x1, float y1, float x2, float y2, long ms) {
+        Path p = new Path();
+        p.moveTo(x1, y1);
+        p.lineTo(x2, y2);
+        GestureDescription g = new GestureDescription.Builder()
+                .addStroke(new GestureDescription.StrokeDescription(p, 0, ms))
+                .build();
+        dispatchGesture(g, null, null);
     }
 
     // ---------- utilitarios ----------
