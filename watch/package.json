@@ -1,0 +1,11 @@
+{
+  "name": "trexlink-watch",
+  "version": "1.0.0",
+  "description": "TRexLink - Mini App do relogio",
+  "main": "app.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@zeppos/device-types": "^3.0.0",
+    "@zeppos/zml": "0.0.43"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 1098765,
+    "appName": "TRexLink",
+    "appType": "app",
+    "version": {
+      "code": 1,
+      "name": "1.0.0"
+    },
+    "icon": "icon.png",
+    "vender": "francisco",
+    "description": "Controle do celular Samsung pelo relogio"
+  },
+  "permissions": [],
+  "runtime": {
+    "apiVersion": {
+      "compatible": "3.0.0",
+      "target": "3.0.0",
+      "minVersion": "3.0.0"
+    }
+  },
+  "debug": false,
+  "targets": {
+    "trex3pro": {
+      "module": {
+        "page": {
+          "pages": ["page/index"]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        }
+      },
+      "platforms": [
+        { "st": "r", "dw": 480 }
+      ],
+      "designWidth": 480
+    }
+  },
+  "i18n": {
+    "en-US": { "appName": "TRexLink" },
+    "pt-BR": { "appName": "TRexLink" }
+  },
+  "defaultLanguage": "en-US"
+}
